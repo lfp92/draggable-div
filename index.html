@@ -1,0 +1,117 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="./styles.css">
+    <script>
+        var d, draggable;
+        var difLeft, difTop;
+        var z = 0;
+        var cor = ["aliceblue", "aquamarine", "bisque", "floralwhite", "ivory", "palegreen", "thistle"];
+        var divList = [];
+        var lastId;
+        var escButton = 27;
+        
+        function updateZIndex(div){
+            var list = document.getElementsByClassName("draggable");
+            if (div.id == lastId){
+                return;
+            }
+            lastId = div.id;
+            for (var i = 0; i < list.length; i++){
+                if(list[i].style.zIndex > 0){
+                    list[i].style.zIndex--;
+                } 
+            }
+        }
+        
+        function createBtnCreate(){
+            var btn = document.createElement("INPUT");
+            btn.type = "button";
+            btn.id = "create";
+            btn.value = "+";
+            btn.className = "btncreate";
+            btn.setAttribute("onclick", "createDiv(id)");
+            return btn;
+        }
+        
+        function createBtnDelete(id){
+            var btn = document.createElement("INPUT");
+            btn.type = "button";
+            btn.id = "delete_" + id;
+            btn.value = "x";
+            btn.className = "btndelete";
+            btn.setAttribute("onclick", "deleteDiv(id)");
+            return btn;
+        }
+        
+        function createTextArea(){
+            var div = document.createElement("DIV");
+            div.className = "editable";
+            div.contentEditable = true;
+            return div;
+        }
+        
+        function createDiv() {
+            var newdiv = document.createElement("DIV");
+            document.body.appendChild(newdiv);
+            divList = document.getElementsByClassName("draggable");
+            newdiv.id = "drag" + divList.length;
+            newdiv.style.zIndex = z++;
+            newdiv.style.backgroundColor = cor[Math.floor(Math.random() * 8)];
+            var bcreate = createBtnCreate();
+            var bdelete = createBtnDelete(newdiv.id);
+            var textarea = createTextArea();
+            newdiv.appendChild(bcreate);
+            newdiv.appendChild(bdelete);
+            newdiv.appendChild(textarea);
+            newdiv.className = "draggable";
+            newdiv.setAttribute("onmouseDown", "mouseDown(id)");
+        }
+        
+        function deleteDiv(id){
+            var arr = id.split("delete_");
+            var d = document.getElementById(arr[1]);
+            var list = document.getElementsByClassName("draggable");
+            document.body.removeChild(d);
+            if (list.length == 0)
+                window.close();
+        }
+        
+        function init() {
+            draggable = false;
+            createDiv();
+        }
+
+        function mouseMove() {
+            if (draggable) {
+                console.log(d.style.left + " + " + d.style.marginRight);
+                d.style.left = (event.clientX - difLeft);
+                d.style.top = (event.clientY - difTop);
+            }
+        }
+
+        function mouseDown(id) {
+            d = document.getElementById(id);
+            difLeft = event.clientX - d.offsetLeft;
+            difTop = event.clientY - d.offsetTop;
+            draggable = true;
+            updateZIndex(d);
+            d.style.zIndex = z;
+            onmousemove = mouseMove;
+        }
+
+        onmouseup = function() {
+            draggable = false;
+            onmousedown = null;
+            onmousemove = null;
+        }
+        
+        onload = init;
+    </script>
+</head>
+
+<body>
+    
+</body>
+
+</html>
